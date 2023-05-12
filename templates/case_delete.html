@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="" method="post">
+    <p>Ar you sure you want to delete "{{case.name}}" case?</p>
+    <button class="btn btn-danger ml-2" type="submit">Confirm</button>
+</form>
+
+{% endblock content %}

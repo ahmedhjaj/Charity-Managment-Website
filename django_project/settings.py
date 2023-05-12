@@ -30,14 +30,16 @@ ALLOWED_HOSTS = []
 LOGIN_REDIRECT_URL = "home"  # new
 LOGOUT_REDIRECT_URL = "home"  # new
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5" # new
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # new
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" #
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  #
 DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = "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"
+EMAIL_HOST_PASSWORD = (
+    "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"
+)
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 # Application definition
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "accounts.apps.AccountsConfig",
     "pages.apps.PagesConfig",
+    "cases.apps.CasesConfig",
 ]
 
 MIDDLEWARE = [

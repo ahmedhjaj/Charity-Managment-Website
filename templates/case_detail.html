@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="article-entry">
+    <h2>{{case.name}}</h2>
+    <h4>by{{case.author}} | {{case.addDate}} </h4>
+    <p>{{case.caseDescribtion}}</p>
+</div>
+
+<p><a href="{% url 'case_edit' case.pk %}">Edit</a>|
+    <a href="{% url 'case_delete' case.pk %}">Delete</a>
+</p>
+
+<p>Back to<a href="{% url 'case_list' %}">All Cases</a>.</p>
+{% endblock content %}
