@@ -1,16 +1,155 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<div class="article-entry">
-    <h2>{{case.name}}</h2>
-    <h4>by{{case.author}} | {{case.addDate}} </h4>
-    <p>{{case.caseDescribtion}}</p>
+<div class="container">
+    <div class="article-entry">
+        <h2>{{ case.name }}</h2>
+        <h4>by {{ case.author }} | {{ case.addDate }}</h4>
+        <p>{{ case.caseDescribtion }}</p>
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#additionalDetails" aria-expanded="false" aria-controls="additionalDetails">
+            Show Additional Details
+        </button>
+
+        <div class="collapse mt-3" id="additionalDetails">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Name:</strong> {{ case.name }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ case.gender }}</li>
+                <li class="list-group-item"><strong>Marriage Status:</strong> {{ case.marriageStatus }}</li>
+                <li class="list-group-item"><strong>Birth Date:</strong> {{ case.birthDate }}</li>
+                <li class="list-group-item"><strong>National ID:</strong> {{ case.nationalID }}</li>
+                <li class="list-group-item"><strong>National ID Expiration:</strong> {{ case.nationalIDExpiration }}</li>
+                <li class="list-group-item"><strong>Qualification:</strong> {{ case.qualification }}</li>
+                <li class="list-group-item"><strong>Phone Number:</strong> {{ case.phoneNumber }}</li>
+                <li class="list-group-item"><strong>Guardian Name:</strong> {{ case.guardianName }}</li>
+                <li class="list-group-item"><strong>Guardian Relation:</strong> {{ case.guardianRelation }}</li>
+                <li class="list-group-item"><strong>Guardian Number:</strong> {{ case.guardianNumber }}</li>
+                <li class="list-group-item"><strong>Housing:</strong> {{ case.housing }}</li>
+                <li class="list-group-item"><strong>Case Description:</strong> {{ case.caseDescribtion }}</li>
+            </ul>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyDetails" aria-expanded="false" aria-controls="familyDetails">
+            Show Family Details
+        </button>
+        <div class="collapse mt-3" id="familyDetails">
+            <h4>Family Members:</h4>
+            <ul class="list-group">
+                {% for family_member in case.family_members.all %}
+                <li class="list-group-item">
+                    <strong>Name:</strong> {{ family_member.name }}<br>
+                    <strong>Gender:</strong> {{ family_member.gender }}<br>
+                    <strong>Age:</strong> {{ family_member.age }}<br>
+                    <strong>Qualification:</strong> {{ family_member.qualification }}<br>
+                    <strong>Occupation:</strong> {{ family_member.occupation }}<br>
+                    <strong>Notes:</strong> {{ family_member.notes }}
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-danger">Delete</a>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item">No family members found for this case.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyIncome" aria-expanded="false" aria-controls="familyIncome">
+            Show Family Income
+        </button>
+        <div class="collapse mt-3" id="familyIncome">
+            <h4>Family Income:</h4>
+            <ul class="list-group">
+                {% for income in family_income %}
+                <li class="list-group-item">
+                    <strong>Source:</strong> {{ income.source_name }}<br>
+                    <strong>Amount:</strong> {{ income.amount }}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No family income found for this case.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyExpenses" aria-expanded="false" aria-controls="familyExpenses">
+            Show Family Expenses
+        </button>
+        <div class="collapse mt-3" id="familyExpenses">
+            <h4>Family Expenses:</h4>
+            <ul class="list-group">
+                {% for expense in family_expenses %}
+                <li class="list-group-item">
+                    <strong>Statement:</strong> {{ expense.statement }}<br>
+                    <strong>Amount:</strong> {{ expense.amount }}<br>
+                    <strong>Notes:</strong> {{ expense.notes }}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No family expenses found for this case.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#medicalExpenses" aria-expanded="false" aria-controls="medicalExpenses">
+            Show Medical Expenses
+        </button>
+        <div class="collapse mt-3" id="medicalExpenses">
+            <h4>Medical Expenses:</h4>
+            <ul class="list-group">
+                {% for expense in case.medical_expenses.all %}
+                <li class="list-group-item">
+                    <strong>Full Name:</strong> {{ expense.fullName }}<br>
+                    <strong>Disease Type:</strong> {{ expense.diseaseType }}<br>
+                    <strong>Medicine:</strong> {{ expense.medicine }}<br>
+                    <strong>Insurance ID:</strong> {{ expense.insuranceID }}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No medical expenses found for this case.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
+            Show Notes
+        </button>
+        <div class="collapse mt-3" id="notes">
+            <h4>Notes:</h4>
+            <ul class="list-group">
+                {% for note in case.notes.all %}
+                <li class="list-group-item">
+                    <strong>Human Needs:</strong> {{ note.humanNeeds }}<br>
+                    <strong>Other Help:</strong> {{ note.otherHelp }}<br>
+                    <strong>Interview Description:</strong> {{ note.interviewDescription }}<br>
+                    <strong>Interview Result:</strong> {{ note.interviewResult }}<br>
+                    <strong>Researcher Opinion:</strong> {{ note.researcherOpinion }}<br>
+                    <strong>Supervisor Opinion:</strong> {{ note.supervisorOpinion }}<br>
+                    <strong>Overall Rating:</strong> {{ note.overallRating }}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No notes found for this case.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="mt-3">
+        <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">Delete</a>
+    </div>
+
+    <p class="mt-3">
+        Back to <a href="{% url 'case_list' %}" class="btn btn-secondary">All Cases</a>
+    </p>
 </div>
 
-<p><a href="{% url 'case_edit' case.pk %}">Edit</a>|
-    <a href="{% url 'case_delete' case.pk %}">Delete</a>
-</p>
-
-<p>Back to<a href="{% url 'case_list' %}">All Cases</a>.</p>
 {% endblock content %}

@@ -28,13 +28,16 @@ REGIONS = [
     ("AX", "Alexandria"),
 ]
 
+
 # Create your models here.
 class Case(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    addDate = models.DateTimeField(auto_now_add=True, )
+    addDate = models.DateTimeField(
+        auto_now_add=True,
+    )
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=2, choices=GENDERS)
     job = models.CharField(max_length=150)
@@ -43,7 +46,7 @@ class Case(models.Model):
     birthDate = models.DateField()
     nationalID = models.CharField(max_length=14)
     nationalIDExpiration = models.DateField()
-    qualification = models.CharField(max_length=255)
+    qualification = models.CharField(max_length=2, choices=QUALIFICATIONS)
     phoneNumber = models.CharField(max_length=150)
     gaurdianName = models.CharField(max_length=255)
     gaurdianRelation = models.CharField(max_length=2, choices=GAURDIAN_RELATIONS)
@@ -56,11 +59,13 @@ class Case(models.Model):
 
     def get_absolute_url(self):
         return reverse("case_detail", kwargs={"pk": self.pk})
-    
+
+
 class Family_Member(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
+        related_name="family_members",
     )
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=2, choices=GENDERS)
@@ -68,51 +73,60 @@ class Family_Member(models.Model):
     qualification = models.CharField(max_length=2, choices=QUALIFICATIONS)
     occubation = models.CharField(max_length=150)
     notes = models.CharField(max_length=150)
-    
+
     def __str__(self):
         return self.name
 
-    
+
 class Family_Income(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
+        related_name="family_income",
     )
     source_name = models.CharField(max_length=150)
     amount = models.IntegerField()
+
     def __str__(self):
-        return self.name
+        return self.source_name
 
 
 class Family_Expenses(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
+        related_name="family_expenses",
     )
     statement = models.CharField(max_length=150)
     amount = models.IntegerField()
     notes = models.CharField(max_length=150)
 
     def __str__(self):
-        return self.name
+        return self.statement
 
-    
+
 class Medical_Expenses(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
+        related_name='medical_expenses',
     )
     fullName = models.CharField(max_length=255)
-    diseaseType = models.CharField(max_length=2, choices=GENDERS)
+    diseaseType = models.CharField(max_length=255)
     medicine = models.CharField(max_length=150)
     insuranceID = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return self.fullName
 
 
-    
 class Notes(models.Model):
+    case = models.ForeignKey(
+        Case,
+        on_delete=models.CASCADE,
+        related_name='notes',
+    )
+    noteHeader = models.CharField(max_length=300)
     humanNeeds = models.CharField(max_length=300)
     otherHelp = models.CharField(max_length=300)
     interviewDescription = models.CharField(max_length=300)
@@ -122,6 +136,4 @@ class Notes(models.Model):
     overallRating = models.CharField(max_length=300)
 
     def __str__(self):
-        return self.name
-
-
+        return self.noteHeader

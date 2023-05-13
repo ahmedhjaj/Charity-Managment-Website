@@ -8,6 +8,8 @@ class CaseForm(forms.ModelForm):
         fields = (
         "name",
         "gender",
+        "job",
+        "region",
         "marriageStatus",
         "birthDate",
         "nationalID",

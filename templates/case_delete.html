@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form action="" method="post">
+<form action="" method="post">{% csrf_token %}
     <p>Ar you sure you want to delete "{{case.name}}" case?</p>
     <button class="btn btn-danger ml-2" type="submit">Confirm</button>
 </form>
