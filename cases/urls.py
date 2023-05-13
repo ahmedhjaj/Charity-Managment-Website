@@ -1,5 +1,12 @@
 from django.urls import path
-from .views import CaseListView, CaseDetailView, CaseUpdateView, CaseDeleteView, CaseCreateView
+from .views import (
+    CaseListView,
+    CaseDetailView,
+    CaseUpdateView,
+    CaseDeleteView,
+    CaseCreateView,
+)
+
 
 urlpatterns = [
     path("<int:pk>/", CaseDetailView.as_view(), name="case_detail"),

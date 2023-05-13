@@ -72,8 +72,6 @@ class Family_Member(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
     
 class Family_Income(models.Model):
     case = models.ForeignKey(
@@ -85,8 +83,6 @@ class Family_Income(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
 
 class Family_Expenses(models.Model):
     case = models.ForeignKey(
@@ -100,8 +96,6 @@ class Family_Expenses(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
     
 class Medical_Expenses(models.Model):
     case = models.ForeignKey(
@@ -116,8 +110,7 @@ class Medical_Expenses(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
+
     
 class Notes(models.Model):
     humanNeeds = models.CharField(max_length=300)
@@ -131,5 +124,4 @@ class Notes(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("case_detail", kwargs={"pk": self.pk})
+

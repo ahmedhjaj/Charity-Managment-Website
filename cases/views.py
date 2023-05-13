@@ -3,7 +3,7 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
 from .models import Case
 from django import forms
-
+from .forms import CaseForm, Family_MemberForm
 
 # Create your views here.
 class CaseListView(ListView):
@@ -41,22 +41,11 @@ class CaseDeleteView(DeleteView):
     template_name = "case_delete.html"
     success_url = reverse_lazy("case_list")
 
-
 class CaseCreateView(CreateView):
     model = Case
     template_name = "case_new.html"
-    class MyModelForm(forms.ModelForm):
-        class Meta:
-            model = Case
-            fields = "__all__"
-            widgets = {
-                "birthDate": forms.DateInput(attrs={"type": "date"})
-            }
-    form_class = MyModelForm
-
+    form_class = CaseForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-
-
