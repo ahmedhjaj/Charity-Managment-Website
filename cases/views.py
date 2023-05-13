@@ -1,6 +1,8 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+
 from .models import (
     Case,
     Family_Member,
@@ -9,7 +11,6 @@ from .models import (
     Medical_Expenses,
     Notes,
 )
-from django import forms
 from django.urls import reverse
 from .forms import CaseForm, Family_MemberForm
 
@@ -111,17 +112,66 @@ class FamilyMemberUpdateView(UpdateView):
     def get_success_url(self):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
+    def form_valid(self, form):
+        case = Case.objects.get(pk=self.kwargs["case_pk"])
+        form.instance.case = case
+        return super().form_valid(form)
+
+
+class FamilyMemberDeleteView(DeleteView):
+    model = Family_Member
+    template_name = "family_members/member_delete.html"
+    def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            case = get_object_or_404(Case, pk=self.kwargs["case_pk"])
+            context["case"] = case
+            return context
+    def get_success_url(self):
+        return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
+
+
+class FamilyIncomeCreateView(CreateView):
+    model = Family_Income
+    template_name = "family_income/income_new.html"
+    fields = (
+        "source_name",
+        "amount",
+    )
+    def get_success_url(self):
+        return reverse("case_detail", kwargs={"pk": self.kwargs["pk"]})
+
+    def form_valid(self, form):
+        case = Case.objects.get(pk=self.kwargs["pk"])
+        form.instance.case = case
+        return super().form_valid(form)
+
+
+class FamilyIncomeUpdateView(UpdateView):
+    model = Family_Income
+    fields = (
+        "source_name",
+        "amount",
+    )
+    template_name = "family_income/income_edit.html"
+
+    def get_success_url(self):
+        return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
     def form_valid(self, form):
         case = Case.objects.get(pk=self.kwargs["case_pk"])
         form.instance.case = case
         return super().form_valid(form)
 
-    
-class FamilyMemberDeleteView(DeleteView):
-    model = Family_Member
-    template_name = "family_members/member_delete.html"
+
+class FamilyIncomeDeleteView(DeleteView):
+    model = Family_Income
+    template_name = "family_income/income_delete.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        income = get_object_or_404(Family_Income, pk=self.kwargs["pk"])
+        case = income.case
+        context["income"] = income
+        context["case"] = case
+        return context
     def get_success_url(self):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
-
-

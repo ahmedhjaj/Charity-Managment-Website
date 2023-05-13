@@ -8,6 +8,9 @@ from .views import (
     FamilyMemberCreateView,
     FamilyMemberUpdateView,
     FamilyMemberDeleteView,
+    FamilyIncomeCreateView,
+    FamilyIncomeUpdateView,
+    FamilyIncomeDeleteView,
 )
 
 
@@ -30,6 +33,21 @@ urlpatterns = [
         "<int:case_pk>/family_members/<int:pk>/delete/",
         FamilyMemberDeleteView.as_view(),
         name="member_delete",
+    ),
+    path(
+        "<int:pk>/family_income/new/",
+        FamilyIncomeCreateView.as_view(),
+        name="income_new",
+    ),
+    path(
+        "<int:case_pk>/family_income/<int:pk>/edit/",
+        FamilyIncomeUpdateView.as_view(),
+        name="income_edit",
+    ),
+    path(
+        "<int:case_pk>/family_income/<int:pk>/delete/",
+        FamilyIncomeDeleteView.as_view(),
+        name="income_delete",
     ),
     path("", CaseListView.as_view(), name="case_list"),
 ]
