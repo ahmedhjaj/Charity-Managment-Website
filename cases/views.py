@@ -13,7 +13,9 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
-
+from django.http import JsonResponse
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 from .models import (
     Case,
     Family_Member,
@@ -29,26 +31,18 @@ from .forms import CaseForm, Family_MemberForm
 
 
 # Create your views here.
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class AddRegionView(LoginRequiredMixin, CreateView):
-    def get(self, request):
-        # Fetch the case from the database
-        if not request.user.is_superuser:
-            messages.error(request, "You do not have permission to add a region.")
-            return redirect("case_list")
-
     model = Regions
     fields = ["region", "city"]
     template_name = "add_region.html"
     success_url = reverse_lazy("case_list")
 
 
-class AddHelpView(LoginRequiredMixin, CreateView):
-    def get(self, request):
-        # Fetch the case from the database
-        if not request.user.is_superuser:
-            messages.error(request, "You do not have permission to add a help type.")
-            return redirect("case_list")
+   
 
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
+class AddHelpView(LoginRequiredMixin, CreateView):
     model = TypeHelp
     fields = ["typeHelp"]
     template_name = "add_help.html"
@@ -602,7 +596,7 @@ class DownloadExcelView(LoginRequiredMixin, View):
 
 
 table_headers = {
-    Case: ["id", "name", "author", "addDate", "caseDescribtion"],
+    Case: ["id", "name","region","typeHelp", "author", "addDate", "caseDescribtion"],
     Family_Member: [
         "id",
         "case_id",
@@ -731,3 +725,5 @@ class DownloadAllView(LoginRequiredMixin, View):
         response["Content-Disposition"] = "attachment; filename=case_data.xlsx"
         workbook.save(response)
         return response
+
+

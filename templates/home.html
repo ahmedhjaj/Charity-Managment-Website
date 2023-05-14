@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
 {% block title %}Home{% endblock title %}
+
+
 {% block content %}
+<style>
+  .chart-container {
+  width: 100%;
+  height: 400px;
+  margin-bottom: 20px;
+}
+</style>
 <div class="container">
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <h1 class="text-center">{% trans "Welcome to the Website" %}</h1>
+      <h1 class="text-center">{% trans "Welcome to the Ajawd El Khair" %}</h1>
       {% if user.is_authenticated %}
-        <p class="text-center">Hi {{ user.username }}. Your age is {{ user.age }}.</p>
+        <p class="text-center">Hi {{ user.username }}.</p>
         <div class="text-center">
           <a href="{% url 'logout' %}" class="btn btn-primary">Log Out</a>
         </div>
@@ -20,5 +30,90 @@
       {% endif %}
     </div>
   </div>
+{% if user.is_authenticated %}
+<hr>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Helps</h2>
+      <div class="chart-container">
+        <canvas id="helps-chart"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h2>Regions</h2>
+      <div class="chart-container">
+        <canvas id="regions-chart"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+  var helpsData = {
+    labels: {{ labels_help|safe }},
+    datasets: [{
+      data: {{ data_help|safe }},
+      backgroundColor: [
+        '#FDD835', '#BF360C', '#2196F3', '#C0C0C0', '#D3D3D3'
+      ],
+      borderWidth: 0,
+      label: ''
+    }]
+  };
+
+  var regionsData = {
+    labels: {{ labels_regions|safe }},
+    datasets: [{
+      data: {{ data_regions|safe }},
+      backgroundColor: [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+      ],
+      borderWidth: 0,
+      label: ''
+    }]
+  };
+
+  var options = {
+    responsive: true,
+    legend: {
+      position: 'bottom',
+      labels: {
+        fontSize: 14,
+        boxWidth: 20
+      }
+    },
+    tooltips: {
+      backgroundColor: '#FFF',
+      bodyFontColor: '#000',
+      displayColors: false,
+      callbacks: {
+        label: function(tooltipItem, data) {
+          var label = data.labels[tooltipItem.index];
+          var value = data.datasets[0].data[tooltipItem.index];
+          return label + ': ' + value;
+        }
+      }
+    }
+  };
+
+  window.onload = function() {
+    var helpsCtx = document.getElementById('helps-chart').getContext('2d');
+    var helpsChart = new Chart(helpsCtx, {
+      type: 'pie',
+      data: helpsData,
+      options: options
+    });
+
+    var regionsCtx = document.getElementById('regions-chart').getContext('2d');
+    var regionsChart = new Chart(regionsCtx, {
+      type: 'pie',
+      data: regionsData,
+      options: options
+    });
+  };
+</script>
+{% endif %}
 {% endblock content %}
