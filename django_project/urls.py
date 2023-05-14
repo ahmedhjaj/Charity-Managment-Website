@@ -14,13 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.views.generic.base import TemplateView
+from django.conf import settings
+from django.urls import path, include, re_path
+from django.views.i18n import set_language
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("cases/",include("cases.urls")),
+    path("cases/", include("cases.urls")),
     path("", include("pages.urls")),
+    path('set-language/', set_language, name='set_language'),
 ]
+
+if 'rosetta' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        re_path(r'^rosetta/', include('rosetta.urls'))
+    ]

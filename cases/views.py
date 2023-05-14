@@ -14,7 +14,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
 
-
 from .models import (
     Case,
     Family_Member,
@@ -30,8 +29,6 @@ from .forms import CaseForm, Family_MemberForm
 
 
 # Create your views here.
-
-
 class AddRegionView(LoginRequiredMixin, CreateView):
     def get(self, request):
         # Fetch the case from the database

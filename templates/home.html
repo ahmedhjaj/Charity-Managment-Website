@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block title %}Home{% endblock title %}
-
 {% block content %}
-
-{% if user.is_authenticated %}
-    Hi {{user.username}}. Your age is {{user.age}}.
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'signup' %}">Sign Up</a>
-
-{% endif %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <h1 class="text-center">{% trans "Welcome to the Website" %}</h1>
+      {% if user.is_authenticated %}
+        <p class="text-center">Hi {{ user.username }}. Your age is {{ user.age }}.</p>
+        <div class="text-center">
+          <a href="{% url 'logout' %}" class="btn btn-primary">Log Out</a>
+        </div>
+      {% else %}
+        <p class="text-center">{% trans "You are not logged in" %}</p>
+        <div class="text-center">
+          <a href="{% url 'login' %}" class="btn btn-primary">{% trans "Login" %}</a>
+          <a href="{% url 'signup' %}" class="btn btn-secondary">{% trans "Sign Up" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock content %}
