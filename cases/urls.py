@@ -22,6 +22,8 @@ from .views import (
     NoteUpdateView,
     DownloadExcelView,
     DownloadAllView,
+    AddRegionView,
+    AddHelpView
 )
 
 
@@ -115,5 +117,8 @@ urlpatterns = [
         DownloadAllView.as_view(),
         name="download_all_cases",
     ),
+    path('add_region/', AddRegionView.as_view(), name='add_region'),
+    path('add_help/', AddHelpView.as_view(), name='add_help'),
+
     path("", CaseListView.as_view(), name="case_list"),
 ]

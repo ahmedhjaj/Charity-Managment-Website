@@ -5,7 +5,10 @@
 {% block content %}
 <div class="text-center">
     <a href="{% url 'download_all_cases' %}" class="btn btn-success">Download All Cases</a>
+    <a href="{% url 'add_region' %}" class="btn btn-primary">Add Region</a>
+    <a href="{% url 'add_help' %}" class="btn btn-primary">Add Help Type</a>
 </div>
+
 <br>
 {% for case in case_list %}
     <div class="card">

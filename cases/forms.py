@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Case, Family_Member
+from .models import Case, Family_Member, Regions
 
 class CaseForm(forms.ModelForm):
     class Meta:
@@ -10,6 +10,7 @@ class CaseForm(forms.ModelForm):
         "gender",
         "job",
         "region",
+        "typeHelp",
         "marriageStatus",
         "birthDate",
         "nationalID",

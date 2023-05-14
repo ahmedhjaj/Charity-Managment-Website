@@ -8,6 +8,7 @@ from io import BytesIO
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import (
@@ -17,18 +18,34 @@ from .models import (
     Family_Income,
     Medical_Expenses,
     Notes,
+    Regions,
+    TypeHelp,
 )
 from django.urls import reverse
 from .forms import CaseForm, Family_MemberForm
 
 
 # Create your views here.
-class CaseListView(ListView):
+class AddRegionView(LoginRequiredMixin,CreateView):
+    model = Regions
+    fields = ["region", "city"]
+    template_name = "add_region.html"
+    success_url = reverse_lazy("case_list")
+
+
+class AddHelpView(LoginRequiredMixin,CreateView):
+    model = TypeHelp
+    fields = ["typeHelp"]
+    template_name = "add_help.html"
+    success_url = reverse_lazy("case_list")
+
+
+class CaseListView(LoginRequiredMixin,ListView):
     model = Case
     template_name = "case_list.html"
 
 
-class CaseDetailView(DetailView):
+class CaseDetailView(LoginRequiredMixin,DetailView):
     model = Case
     template_name = "case_detail.html"
     context_object_name = "case"
@@ -50,13 +67,14 @@ class CaseDetailView(DetailView):
         return context
 
 
-class CaseUpdateView(UpdateView):
+class CaseUpdateView(LoginRequiredMixin,UpdateView):
     model = Case
     fields = (
         "name",
         "gender",
         "job",
         "region",
+        "typeHelp",
         "marriageStatus",
         "birthDate",
         "nationalID",
@@ -72,13 +90,13 @@ class CaseUpdateView(UpdateView):
     template_name = "case_edit.html"
 
 
-class CaseDeleteView(DeleteView):
+class CaseDeleteView(LoginRequiredMixin,DeleteView):
     model = Case
     template_name = "case_delete.html"
     success_url = reverse_lazy("case_list")
 
 
-class CaseCreateView(CreateView):
+class CaseCreateView(LoginRequiredMixin,CreateView):
     model = Case
     template_name = "case_new.html"
     form_class = CaseForm
@@ -88,7 +106,7 @@ class CaseCreateView(CreateView):
         return super().form_valid(form)
 
 
-class FamilyMemberCreateView(CreateView):
+class FamilyMemberCreateView(LoginRequiredMixin,CreateView):
     model = Family_Member
     template_name = "family_members/member_new.html"
     form_class = Family_MemberForm
@@ -104,7 +122,7 @@ class FamilyMemberCreateView(CreateView):
         return super().form_valid(form)
 
 
-class FamilyMemberUpdateView(UpdateView):
+class FamilyMemberUpdateView(LoginRequiredMixin,UpdateView):
     model = Family_Member
     fields = (
         "name",
@@ -125,7 +143,7 @@ class FamilyMemberUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class FamilyMemberDeleteView(DeleteView):
+class FamilyMemberDeleteView(LoginRequiredMixin,DeleteView):
     model = Family_Member
     template_name = "family_members/member_delete.html"
 
@@ -139,7 +157,7 @@ class FamilyMemberDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class FamilyIncomeCreateView(CreateView):
+class FamilyIncomeCreateView(LoginRequiredMixin,CreateView):
     model = Family_Income
     template_name = "family_income/income_new.html"
     fields = (
@@ -156,7 +174,7 @@ class FamilyIncomeCreateView(CreateView):
         return super().form_valid(form)
 
 
-class FamilyIncomeUpdateView(UpdateView):
+class FamilyIncomeUpdateView(LoginRequiredMixin,UpdateView):
     model = Family_Income
     fields = (
         "source_name",
@@ -173,7 +191,7 @@ class FamilyIncomeUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class FamilyIncomeDeleteView(DeleteView):
+class FamilyIncomeDeleteView(LoginRequiredMixin,DeleteView):
     model = Family_Income
     template_name = "family_income/income_delete.html"
 
@@ -189,7 +207,7 @@ class FamilyIncomeDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class FamilyExpensesCreateView(CreateView):
+class FamilyExpensesCreateView(LoginRequiredMixin,CreateView):
     model = Family_Expenses
     template_name = "family_expenses/expense_new.html"
     fields = (
@@ -206,7 +224,7 @@ class FamilyExpensesCreateView(CreateView):
         return super().form_valid(form)
 
 
-class FamilyExpensesUpdateView(UpdateView):
+class FamilyExpensesUpdateView(LoginRequiredMixin,UpdateView):
     model = Family_Expenses
     fields = (
         "source_name",
@@ -223,7 +241,7 @@ class FamilyExpensesUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class FamilyExpensesDeleteView(DeleteView):
+class FamilyExpensesDeleteView(LoginRequiredMixin,DeleteView):
     model = Family_Expenses
     template_name = "family_expenses/expense_delete.html"
 
@@ -239,7 +257,7 @@ class FamilyExpensesDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class MedicalExpensesCreateView(CreateView):
+class MedicalExpensesCreateView(LoginRequiredMixin.CreateView):
     model = Medical_Expenses
     template_name = "family_medical/medical_new.html"
     fields = (
@@ -258,7 +276,7 @@ class MedicalExpensesCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MedicalExpensesUpdateView(UpdateView):
+class MedicalExpensesUpdateView(LoginRequiredMixin,UpdateView):
     model = Medical_Expenses
     fields = (
         "fullName",
@@ -277,7 +295,7 @@ class MedicalExpensesUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class MedicalExpensesDeleteView(DeleteView):
+class MedicalExpensesDeleteView(LoginRequiredMixin,DeleteView):
     model = Medical_Expenses
     template_name = "family_medical/medical_delete.html"
 
@@ -293,7 +311,7 @@ class MedicalExpensesDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class NoteCreateView(CreateView):
+class NoteCreateView(LoginRequiredMixin.CreateView):
     model = Notes
     template_name = "notes/note_new.html"
     fields = (
@@ -315,7 +333,7 @@ class NoteCreateView(CreateView):
         return super().form_valid(form)
 
 
-class NoteUpdateView(UpdateView):
+class NoteUpdateView(LoginRequiredMixin,UpdateView):
     model = Notes
     fields = (
         "noteHeader",
@@ -337,7 +355,7 @@ class NoteUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class NoteDeleteView(DeleteView):
+class NoteDeleteView(LoginRequiredMixin,DeleteView):
     model = Notes
     template_name = "notes/note_delete.html"
 
@@ -353,7 +371,7 @@ class NoteDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class DownloadExcelView(View):
+class DownloadExcelView(LoginRequiredMixin,View):
     def get(self, request, case_id):
         # Fetch the case from the database
         try:
@@ -547,7 +565,7 @@ table_headers = {
 }
 
 
-class DownloadAllView(View):
+class DownloadAllView(LoginRequiredMixin,View):
     def get(self, request):
         # Create a new workbook and set up the sheet
         workbook = Workbook()

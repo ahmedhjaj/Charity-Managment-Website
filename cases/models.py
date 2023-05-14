@@ -30,6 +30,21 @@ REGIONS = [
 
 
 # Create your models here.
+class Regions(models.Model):
+    region = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.region} - {self.city}"
+
+class TypeHelp(models.Model):
+    typeHelp = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.region}"
+
+
+
 class Case(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -41,7 +56,8 @@ class Case(models.Model):
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=2, choices=GENDERS)
     job = models.CharField(max_length=150)
-    region = models.CharField(max_length=2, choices=REGIONS)
+    region = models.ForeignKey(Regions, on_delete=models.SET_NULL, null=True)
+    typeHelp = models.ForeignKey(TypeHelp, on_delete=models.SET_NULL, null=True)
     marriageStatus = models.CharField(max_length=2, choices=MARRIAGE_STATUS)
     birthDate = models.DateField()
     nationalID = models.CharField(max_length=14)
