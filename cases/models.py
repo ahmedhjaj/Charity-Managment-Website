@@ -109,7 +109,7 @@ class Medical_Expenses(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
-        related_name='medical_expenses',
+        related_name="medical_expenses",
     )
     fullName = models.CharField(max_length=255)
     diseaseType = models.CharField(max_length=255)
@@ -124,7 +124,7 @@ class Notes(models.Model):
     case = models.ForeignKey(
         Case,
         on_delete=models.CASCADE,
-        related_name='notes',
+        related_name="notes",
     )
     noteHeader = models.CharField(max_length=300)
     humanNeeds = models.CharField(max_length=300)

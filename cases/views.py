@@ -3,8 +3,11 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-import openpyxl
+from openpyxl import Workbook
 from io import BytesIO
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font
+from django.utils import timezone
 
 
 from .models import (
@@ -350,11 +353,6 @@ class NoteDeleteView(DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Font
-
-
 class DownloadExcelView(View):
     def get(self, request, case_id):
         # Fetch the case from the database
@@ -507,6 +505,135 @@ class DownloadExcelView(View):
         response["Content-Disposition"] = 'attachment; filename="case_data.xlsx"'
 
         # Save the workbook to the response
+        workbook.save(response)
+
+        return response
+
+
+table_headers = {
+    Case: ["id", "name", "author", "addDate", "caseDescribtion"],
+    Family_Member: [
+        "id",
+        "case_id",
+        "name",
+        "gender",
+        "age",
+        "qualification",
+        "occupation",
+        "notes",
+    ],
+    Family_Expenses: ["id", "case_id", "statement", "amount", "notes"],
+    Family_Income: ["id", "case_id", "source_name", "amount"],
+    Medical_Expenses: [
+        "id",
+        "case_id",
+        "fullName",
+        "diseaseType",
+        "medicine",
+        "insuranceID",
+    ],
+    Notes: [
+        "id",
+        "case_id",
+        "noteHeader",
+        "humanNeeds",
+        "otherHelp",
+        "interviewDescription",
+        "interviewResult",
+        "researcherOpinion",
+        "supervisorOpinion",
+        "overallRating",
+    ],
+}
+
+
+class DownloadAllView(View):
+    def get(self, request):
+        # Create a new workbook and set up the sheet
+        workbook = Workbook()
+
+        for model, headers in table_headers.items():
+            # Create a new sheet for each table
+            sheet = workbook.create_sheet(model.__name__)
+
+            # Write the headers for the current table
+            sheet.append(headers)
+
+            # Retrieve all objects for the current model
+            objects = model.objects.all()
+
+            # Write the data rows for each object
+            for obj in objects:
+                if isinstance(obj, Case):
+                    row_data = [
+                        obj.id,
+                        obj.name,
+                        obj.author.username,
+                        obj.addDate,
+                        obj.caseDescribtion,
+                    ]
+                elif isinstance(obj, Family_Member):
+                    row_data = [
+                        obj.id,
+                        obj.case_id,
+                        obj.name,
+                        obj.gender,
+                        obj.age,
+                        obj.qualification,
+                        obj.occupation,
+                        obj.notes,
+                    ]
+                    # Exclude the related field referencing CustomUser
+                    row_data = row_data[:-1]
+                elif isinstance(obj, Family_Expenses):
+                    row_data = [
+                        obj.id,
+                        obj.case_id,
+                        obj.statement,
+                        obj.amount,
+                        obj.notes,
+                    ]
+                elif isinstance(obj, Family_Income):
+                    row_data = [obj.id, obj.case_id, obj.source_name, obj.amount]
+                elif isinstance(obj, Medical_Expenses):
+                    row_data = [
+                        obj.id,
+                        obj.case_id,
+                        obj.fullName,
+                        obj.diseaseType,
+                        obj.medicine,
+                        obj.insuranceID,
+                    ]
+                elif isinstance(obj, Notes):
+                    row_data = [
+                        obj.id,
+                        obj.case_id,
+                        obj.noteHeader,
+                        obj.humanNeeds,
+                        obj.otherHelp,
+                        obj.interviewDescription,
+                        obj.interviewResult,
+                        obj.researcherOpinion,
+                        obj.supervisorOpinion,
+                        obj.overallRating,
+                    ]
+                else:
+                    continue
+                row_data = [
+                    value.astimezone(timezone.utc).replace(tzinfo=None)
+                    if isinstance(value, timezone.datetime)
+                    else value
+                    for value in row_data
+                ]
+                sheet.append(row_data)
+
+        # Remove the default 'Sheet' created by openpyxl
+        del workbook["Sheet"]
+        # Save the workbook and add it to the response
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = "attachment; filename=case_data.xlsx"
         workbook.save(response)
 
         return response

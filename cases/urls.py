@@ -21,6 +21,7 @@ from .views import (
     NoteDeleteView,
     NoteUpdateView,
     DownloadExcelView,
+    DownloadAllView,
 )
 
 
@@ -104,7 +105,15 @@ urlpatterns = [
         NoteDeleteView.as_view(),
         name="note_delete",
     ),
-    path('download-excel/<int:case_id>/', DownloadExcelView.as_view(), name='download_excel'),
-
+    path(
+        "download-excel/<int:case_id>/",
+        DownloadExcelView.as_view(),
+        name="download_excel",
+    ),
+    path(
+        "download-excel/all_tables/",
+        DownloadAllView.as_view(),
+        name="download_all_cases",
+    ),
     path("", CaseListView.as_view(), name="case_list"),
 ]
