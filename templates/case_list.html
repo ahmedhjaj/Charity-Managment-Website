@@ -3,6 +3,14 @@
 {% block title %}Cases{% endblock title %}
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
 <div class="text-center">
     <a href="{% url 'download_all_cases' %}" class="btn btn-success">Download All Cases</a>
     <a href="{% url 'add_region' %}" class="btn btn-primary">Add Region</a>
