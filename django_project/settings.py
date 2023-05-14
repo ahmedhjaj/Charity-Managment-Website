@@ -12,10 +12,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from environs import Env # new
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = Env()
+env.read_env() 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -34,15 +37,13 @@ LOGOUT_REDIRECT_URL = "home"  # new
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # new
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  #
-DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = (
-    "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"
-)
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = env.str("EMAIL_BACKEND")
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = env.str("EMAIL_HOST")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = env.int("EMAIL_PORT")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
 
 # Application definition
 
