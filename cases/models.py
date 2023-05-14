@@ -71,7 +71,7 @@ class Family_Member(models.Model):
     gender = models.CharField(max_length=2, choices=GENDERS)
     age = models.IntegerField()
     qualification = models.CharField(max_length=2, choices=QUALIFICATIONS)
-    occubation = models.CharField(max_length=150)
+    occupation = models.CharField(max_length=150)
     notes = models.CharField(max_length=150)
 
     def __str__(self):

@@ -35,7 +35,7 @@ class Family_MemberForm(forms.ModelForm):
         "gender",
         "age",
         "qualification",
-        "occubation",
+        "occupation",
         "notes",
         )
         
