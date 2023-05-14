@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% load crispy_forms_tags %}
 <div class="container">
     <div class="article-entry">
         <h2>{{ case.name }}</h2>
@@ -41,6 +41,7 @@
                 <li class="list-group-item"><strong>Housing:</strong> {{ case.housing }}</li>
                 <li class="list-group-item"><strong>Case Description:</strong> {{ case.caseDescribtion }}</li>
             </ul>
+            <hr>
         </div>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyDetails" aria-expanded="false" aria-controls="familyDetails">
             Show Family Details
@@ -66,7 +67,7 @@
                 <li class="list-group-item">No family members found for this case.</li>
                 {% endfor %}
             </ul>
-            <br>    
+            <hr>
         </div>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyIncome" aria-expanded="false" aria-controls="familyIncome">
             Show Family Income
@@ -88,6 +89,7 @@
                 <li class="list-group-item">No family income found for this case.</li>
                 {% endfor %}
             </ul>
+            <hr>
         </div>
 
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#familyExpenses" aria-expanded="false" aria-controls="familyExpenses">
@@ -111,6 +113,7 @@
                 <li class="list-group-item">No family expenses found for this case.</li>
                 {% endfor %}
             </ul>
+            <hr>
         </div>
 
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#medicalExpenses" aria-expanded="false" aria-controls="medicalExpenses">
@@ -135,6 +138,7 @@
                 <li class="list-group-item">No medical expenses found for this case.</li>
                 {% endfor %}
             </ul>
+            <hr>
         </div>
 
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#notes" aria-expanded="false" aria-controls="notes">
@@ -163,10 +167,25 @@
                 <li class="list-group-item">No notes found for this case.</li>
                 {% endfor %}
             </ul>
+            <hr>
         </div>
     </div>
 
+        
+    <hr>
+        <h4>Comments</h4>
+        {% for comment in case.comment_set.all %}
+            <p>{{ comment.author }} &middot; {{ comment }}</p>
+        {% endfor %}
+    <hr>
 
+        
+    <h4>Add a comment</h4>
+    <form action="" method="post">{% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-success ml-2"
+        type="submit">Save</button>
+    </form>
 
     <p class="mt-3">
         <a href="{% url 'case_list' %}" class="btn btn-secondary">Back to All Cases</a>

@@ -20,12 +20,26 @@
             <h3>Describtion</h3>
             {{ case.caseDescribtion }}
         </div>
-        <div class="card-footer text-center text-muted">
-            <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">Edit</a> | 
-            <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">Delete</a> |
-            <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">Download</a>
+        <div class="card-footer text-muted">
+            <div class="text-center">
+                <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">Edit</a> |
+                <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">Delete</a> |
+                <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">Download</a>
+                <hr>
+            </div>
+            <div class="text-left">
+                <h5>Comments:</h5>
+                {% for comment in case.comment_set.all %}
+                    <p>
+                        <span class="font-weight-bold">
+                            {{ comment.author }} &middot;
+                        </span>
+                        {{ comment }}
+                    </p>
+                {% endfor %}
+            </div>
+            <br>
         </div>
-    </div>
-    <br />
+
 {% endfor %}
 {% endblock content %}

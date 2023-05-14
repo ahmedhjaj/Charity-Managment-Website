@@ -23,10 +23,6 @@ QUALIFICATIONS = [
     ("BA", "Bachelor"),
 ]
 
-REGIONS = [
-    ("BJ", "Borj Al Arab"),
-    ("AX", "Alexandria"),
-]
 
 
 # Create your models here.
@@ -41,7 +37,7 @@ class TypeHelp(models.Model):
     typeHelp = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.region}"
+        return f"{self.typeHelp}"
 
 
 
@@ -153,3 +149,15 @@ class Notes(models.Model):
 
     def __str__(self):
         return self.noteHeader
+
+class Comment(models.Model): # new
+    case = models.ForeignKey(Case, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=140)
+    author = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.CASCADE,
+    )
+    def __str__(self):
+        return self.comment
+    def get_absolute_url(self):
+        return reverse("case_list")

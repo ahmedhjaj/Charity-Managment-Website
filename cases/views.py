@@ -1,10 +1,12 @@
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView, View, FormView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
-from django.urls import reverse_lazy
+from django.views.generic.detail import SingleObjectMixin 
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from openpyxl import Workbook
 from io import BytesIO
+from .forms import CommentForm
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 from django.utils import timezone
@@ -38,6 +40,29 @@ class AddHelpView(LoginRequiredMixin,CreateView):
     fields = ["typeHelp"]
     template_name = "add_help.html"
     success_url = reverse_lazy("case_list")
+    
+class CommentGet(DetailView): 
+    model = Case
+    template_name = "case_detail.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = CommentForm()
+        return context
+class CommentPost(SingleObjectMixin, FormView): # new
+    model = Case
+    form_class = CommentForm
+    template_name = "case_detail.html"
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.case = self.object
+        comment.save()
+        return super().form_valid(form)
+    def get_success_url(self):
+        article = self.get_object()
+        return reverse("case_detail", kwargs={"pk": article.pk})
 
 
 class CaseListView(LoginRequiredMixin,ListView):
@@ -64,7 +89,14 @@ class CaseDetailView(LoginRequiredMixin,DetailView):
         context["family_expenses"] = family_expenses
         context["medical_expenses"] = medical_expenses
         context["notes"] = notes
+        context['form'] = CommentForm()
         return context
+    def get(self, request, *args, **kwargs):    
+        view = CommentGet.as_view()
+        return view(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        view = CommentPost.as_view()
+        return view(request, *args, **kwargs)
 
 
 class CaseUpdateView(LoginRequiredMixin,UpdateView):
@@ -257,7 +289,7 @@ class FamilyExpensesDeleteView(LoginRequiredMixin,DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class MedicalExpensesCreateView(LoginRequiredMixin.CreateView):
+class MedicalExpensesCreateView(LoginRequiredMixin,CreateView):
     model = Medical_Expenses
     template_name = "family_medical/medical_new.html"
     fields = (
@@ -311,7 +343,7 @@ class MedicalExpensesDeleteView(LoginRequiredMixin,DeleteView):
         return reverse("case_detail", kwargs={"pk": self.kwargs["case_pk"]})
 
 
-class NoteCreateView(LoginRequiredMixin.CreateView):
+class NoteCreateView(LoginRequiredMixin,CreateView):
     model = Notes
     template_name = "notes/note_new.html"
     fields = (
