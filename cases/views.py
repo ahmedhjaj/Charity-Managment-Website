@@ -31,22 +31,34 @@ from .forms import CaseForm, Family_MemberForm
 
 
 # Create your views here.
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class AddRegionView(LoginRequiredMixin, CreateView):
     model = Regions
     fields = ["region", "city"]
     template_name = "add_region.html"
     success_url = reverse_lazy("case_list")
+    def get(self, request):
+        if not request.user.is_superuser:
+            messages.error(
+                request, "You do not have permission to Add Region."
+            )
+            return redirect("case_list")
+        workbook = Workbook()
 
 
    
 
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class AddHelpView(LoginRequiredMixin, CreateView):
     model = TypeHelp
     fields = ["typeHelp"]
     template_name = "add_help.html"
     success_url = reverse_lazy("case_list")
+    def get(self, request):
+        if not request.user.is_superuser:
+            messages.error(
+                request, "You do not have permission to Add Aid Type."
+            )
+            return redirect("case_list")
+        workbook = Workbook()
 
 
 class CommentGet(DetailView):

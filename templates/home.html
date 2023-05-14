@@ -17,9 +17,9 @@
     <div class="col-md-6 offset-md-3">
       <h1 class="text-center">{% trans "Welcome to the Ajawd El Khair" %}</h1>
       {% if user.is_authenticated %}
-        <p class="text-center">Hi {{ user.username }}.</p>
+        <p class="text-center">{% trans "Hi" %} {{ user.username }}.</p>
         <div class="text-center">
-          <a href="{% url 'logout' %}" class="btn btn-primary">Log Out</a>
+          <a href="{% url 'logout' %}" class="btn btn-primary">{% trans "Log Out" %}</a>
         </div>
       {% else %}
         <p class="text-center">{% trans "You are not logged in" %}</p>
@@ -36,13 +36,13 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h2>Helps</h2>
+      <h2>{% trans "Helps" %}</h2>
       <div class="chart-container">
         <canvas id="helps-chart"></canvas>
       </div>
     </div>
     <div class="col-md-6">
-      <h2>Regions</h2>
+      <h2>{% trans "Regions" %}</h2>
       <div class="chart-container">
         <canvas id="regions-chart"></canvas>
       </div>

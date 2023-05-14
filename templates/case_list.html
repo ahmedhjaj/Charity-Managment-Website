@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block title %}Cases{% endblock title %}
 
 {% block content %}
@@ -12,9 +12,9 @@
         {% endfor %}
     {% endif %}
 <div class="text-center">
-    <a href="{% url 'download_all_cases' %}" class="btn btn-success">Download All Cases</a>
-    <a href="{% url 'add_region' %}" class="btn btn-primary">Add Region</a>
-    <a href="{% url 'add_help' %}" class="btn btn-primary">Add Help Type</a>
+    <a href="{% url 'download_all_cases' %}" class="btn btn-success">{% trans "Download All Cases" %}</a>
+    <a href="{% url 'add_region' %}" class="btn btn-primary">{% trans "Add Region" %}</a>
+    <a href="{% url 'add_help' %}" class="btn btn-primary">{% trans "Add Help Type" %}</a>
 </div>
 
 <br>
@@ -25,18 +25,18 @@
             <span class="text-muted">by {{ case.author }} | {{ case.addDate }}</span>
         </div>
         <div class="card-body">
-            <h3>Describtion</h3>
+            <h3>{% trans "Describtion" %}</h3>
             {{ case.caseDescribtion }}
         </div>
         <div class="card-footer text-muted">
             <div class="text-center">
-                <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">Edit</a> |
-                <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">Delete</a> |
-                <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">Download</a>
+                <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">{% trans "Edit" %}</a> |
+                <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">{% trans "Delete" %}</a> |
+                <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">{% trans "Download" %}</a>
                 <hr>
             </div>
             <div class="text-left">
-                <h5>Comments:</h5>
+                <h5>{% trans "Comments" %}:</h5>
                 {% for comment in case.comment_set.all %}
                     <p>
                         <span class="font-weight-bold">
@@ -46,8 +46,7 @@
                     </p>
                 {% endfor %}
             </div>
-            <br>
         </div>
-
+<hr>
 {% endfor %}
 {% endblock content %}
