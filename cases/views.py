@@ -64,7 +64,17 @@ class CommentPost(SingleObjectMixin, FormView): # new
         article = self.get_object()
         return reverse("case_detail", kwargs={"pk": article.pk})
 
+class CaseSearchView(ListView):
+    model = Case
+    template_name = 'case_search.html'
+    context_object_name = 'case_list'
+    paginate_by = 10
 
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Case.objects.filter(name__icontains=query)
+        return Case.objects.none()
 class CaseListView(LoginRequiredMixin,ListView):
     model = Case
     template_name = "case_list.html"
