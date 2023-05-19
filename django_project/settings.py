@@ -12,13 +12,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-from environs import Env # new
+from environs import Env  # new
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = Env()
-env.read_env() 
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -37,13 +36,6 @@ LOGOUT_REDIRECT_URL = "home"  # new
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"  # new
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-EMAIL_BACKEND = env.str("EMAIL_BACKEND")
-DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
-EMAIL_HOST = env.str("EMAIL_HOST")
-EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = env.int("EMAIL_PORT")
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS")
 
 # Application definition
 
@@ -92,8 +84,13 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "django_project.wsgi.application"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = "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"  # this is your API key
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"  # this is the sendgrid email
 
 
 # Database

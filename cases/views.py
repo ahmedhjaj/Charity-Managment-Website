@@ -10,12 +10,9 @@ from .forms import CommentForm
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 from django.utils import timezone
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.http import JsonResponse
-from django.contrib.auth.decorators import user_passes_test
-from django.utils.decorators import method_decorator
 from .models import (
     Case,
     Family_Member,
@@ -30,38 +27,35 @@ from django.urls import reverse
 from .forms import CaseForm, Family_MemberForm
 
 
-# Create your views here.
-class AddRegionView(LoginRequiredMixin, CreateView):
+class AddRegionView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Regions
     fields = ["region", "city"]
     template_name = "add_region.html"
     success_url = reverse_lazy("case_list")
-    def get(self, request):
-        if not request.user.is_superuser:
-            messages.error(
-                request, "You do not have permission to Add Region."
-            )
-            return redirect("case_list")
-        workbook = Workbook()
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You do not have permission to add a region.")
+        return redirect("case_list")
 
 
-   
-
-class AddHelpView(LoginRequiredMixin, CreateView):
+class AddHelpView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = TypeHelp
     fields = ["typeHelp"]
     template_name = "add_help.html"
     success_url = reverse_lazy("case_list")
-    def get(self, request):
-        if not request.user.is_superuser:
-            messages.error(
-                request, "You do not have permission to Add Aid Type."
-            )
-            return redirect("case_list")
-        workbook = Workbook()
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You do not have permission to add an aid type.")
+        return redirect("case_list")
 
 
-class CommentGet(DetailView):
+class CommentGet(LoginRequiredMixin, DetailView):
     model = Case
     template_name = "case_detail.html"
 
@@ -69,6 +63,13 @@ class CommentGet(DetailView):
         context = super().get_context_data(**kwargs)
         context["form"] = CommentForm()
         return context
+
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.author = self.request.user
+        comment.case = self.object
+        comment.save()
+        return super().form_valid(form)
 
 
 class CommentPost(SingleObjectMixin, FormView):  # new
@@ -82,6 +83,7 @@ class CommentPost(SingleObjectMixin, FormView):  # new
 
     def form_valid(self, form):
         comment = form.save(commit=False)
+        comment.author = self.request.user
         comment.case = self.object
         comment.save()
         return super().form_valid(form)
@@ -122,7 +124,6 @@ class CaseDetailView(LoginRequiredMixin, DetailView):
         family_expenses = Family_Expenses.objects.filter(case=case)
         medical_expenses = Medical_Expenses.objects.filter(case=case)
         notes = Notes.objects.filter(case=case)
-
         context["family_members"] = family_members
         context["family_income"] = family_income
         context["family_expenses"] = family_expenses
@@ -472,10 +473,19 @@ class DownloadExcelView(LoginRequiredMixin, View):
 
         # Add headers to the Case sheet
         case_sheet.append(
-            ["ID", "Name", "Gender", "Marriage Status", "Birth Date", "National ID"]
+            [
+                "ID",
+                "Name",
+                "Gender",
+                "Marriage Status",
+                "Birth Date",
+                "National ID",
+                "Type Help",
+                "Region",
+            ]
         )
         case_sheet["A1"].font = Font(bold=True)
-        for col in range(2, 7):
+        for col in range(2, 9):
             column_letter = get_column_letter(col)
             case_sheet[column_letter + "1"].font = Font(bold=True)
 
@@ -488,6 +498,8 @@ class DownloadExcelView(LoginRequiredMixin, View):
                 case.get_marriageStatus_display(),
                 case.birthDate,
                 case.nationalID,
+                case.typeHelp.typeHelp if case.typeHelp else "",
+                case.region.region if case.region else "",
             ]
         )
 
@@ -607,135 +619,179 @@ class DownloadExcelView(LoginRequiredMixin, View):
         return response
 
 
-table_headers = {
-    Case: ["id", "name","region","typeHelp", "author", "addDate", "caseDescribtion"],
-    Family_Member: [
-        "id",
-        "case_id",
-        "name",
-        "gender",
-        "age",
-        "qualification",
-        "occupation",
-        "notes",
-    ],
-    Family_Expenses: ["id", "case_id", "statement", "amount", "notes"],
-    Family_Income: ["id", "case_id", "source_name", "amount"],
-    Medical_Expenses: [
-        "id",
-        "case_id",
-        "fullName",
-        "diseaseType",
-        "medicine",
-        "insuranceID",
-    ],
-    Notes: [
-        "id",
-        "case_id",
-        "noteHeader",
-        "humanNeeds",
-        "otherHelp",
-        "interviewDescription",
-        "interviewResult",
-        "researcherOpinion",
-        "supervisorOpinion",
-        "overallRating",
-    ],
-}
-
-
 class DownloadAllView(LoginRequiredMixin, View):
     def get(self, request):
         if not request.user.is_superuser:
             messages.error(
                 request, "You do not have permission to download the dataset."
             )
-            return redirect("case_list")
+            return redirect(reverse("case_list"))
+
+        # Fetch all cases from the database
+        cases = Case.objects.all()
+
+        # Create a new workbook
         workbook = Workbook()
 
-        for model, headers in table_headers.items():
-            # Create a new sheet for each table
-            sheet = workbook.create_sheet(model.__name__)
+        # Create sheets for each table
+        case_sheet = workbook.active
+        case_sheet.title = "Case"
+        family_members_sheet = workbook.create_sheet(title="Family Members")
+        family_expenses_sheet = workbook.create_sheet(title="Family Expenses")
+        family_income_sheet = workbook.create_sheet(title="Family Income")
+        medical_expenses_sheet = workbook.create_sheet(title="Medical Expenses")
+        notes_sheet = workbook.create_sheet(title="Notes")
 
-            # Write the headers for the current table
-            sheet.append(headers)
+        # Add headers to the Case sheet
+        case_sheet.append(
+            [
+                "ID",
+                "Name",
+                "Gender",
+                "Marriage Status",
+                "Birth Date",
+                "National ID",
+                "Type Help",
+                "Region",
+            ]
+        )
+        case_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 9):
+            column_letter = get_column_letter(col)
+            case_sheet[column_letter + "1"].font = Font(bold=True)
 
-            # Retrieve all objects for the current model
-            objects = model.objects.all()
+        # Add headers to the Family Members sheet
+        family_members_sheet.append(
+            ["Case ID", "Name", "Gender", "Age", "Qualification", "Occupation", "Notes"]
+        )
+        family_members_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 8):
+            column_letter = get_column_letter(col)
+            family_members_sheet[column_letter + "1"].font = Font(bold=True)
 
-            # Write the data rows for each object
-            for obj in objects:
-                if isinstance(obj, Case):
-                    row_data = [
-                        obj.id,
-                        obj.name,
-                        obj.author.username,
-                        obj.addDate,
-                        obj.caseDescribtion,
-                    ]
-                elif isinstance(obj, Family_Member):
-                    row_data = [
-                        obj.id,
-                        obj.case_id,
-                        obj.name,
-                        obj.gender,
-                        obj.age,
-                        obj.qualification,
-                        obj.occupation,
-                        obj.notes,
-                    ]
-                    # Exclude the related field referencing CustomUser
-                    row_data = row_data[:-1]
-                elif isinstance(obj, Family_Expenses):
-                    row_data = [
-                        obj.id,
-                        obj.case_id,
-                        obj.statement,
-                        obj.amount,
-                        obj.notes,
-                    ]
-                elif isinstance(obj, Family_Income):
-                    row_data = [obj.id, obj.case_id, obj.source_name, obj.amount]
-                elif isinstance(obj, Medical_Expenses):
-                    row_data = [
-                        obj.id,
-                        obj.case_id,
-                        obj.fullName,
-                        obj.diseaseType,
-                        obj.medicine,
-                        obj.insuranceID,
-                    ]
-                elif isinstance(obj, Notes):
-                    row_data = [
-                        obj.id,
-                        obj.case_id,
-                        obj.noteHeader,
-                        obj.humanNeeds,
-                        obj.otherHelp,
-                        obj.interviewDescription,
-                        obj.interviewResult,
-                        obj.researcherOpinion,
-                        obj.supervisorOpinion,
-                        obj.overallRating,
-                    ]
-                else:
-                    continue
-                row_data = [
-                    value.astimezone(timezone.utc).replace(tzinfo=None)
-                    if isinstance(value, timezone.datetime)
-                    else value
-                    for value in row_data
+        # Add headers to the Family Expenses sheet
+        family_expenses_sheet.append(["Case ID", "Statement", "Amount", "Notes"])
+        family_expenses_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 5):
+            column_letter = get_column_letter(col)
+            family_expenses_sheet[column_letter + "1"].font = Font(bold=True)
+
+        # Add headers to the Family Income sheet
+        family_income_sheet.append(["Case ID", "Source", "Amount"])
+        family_income_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 4):
+            column_letter = get_column_letter(col)
+            family_income_sheet[column_letter + "1"].font = Font(bold=True)
+
+        # Add headers to the Medical Expenses sheet
+        medical_expenses_sheet.append(
+            ["Case ID", "Full Name", "Disease Type", "Medicine", "Insurance ID"]
+        )
+        medical_expenses_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 6):
+            column_letter = get_column_letter(col)
+            medical_expenses_sheet[column_letter + "1"].font = Font(bold=True)
+
+        # Add headers to the Notes sheet
+        notes_sheet.append(
+            [
+                "Case ID",
+                "Note Header",
+                "Human Needs",
+                "Other Help",
+                "Interview Description",
+                "Interview Result",
+                "Researcher Opinion",
+                "Supervisor Opinion",
+                "Overall Rating",
+            ]
+        )
+        notes_sheet["A1"].font = Font(bold=True)
+        for col in range(2, 10):
+            column_letter = get_column_letter(col)
+            notes_sheet[column_letter + "1"].font = Font(bold=True)
+
+            # Create a response object with the Excel file content type
+            # Fetch all cases from the database
+        cases = Case.objects.all()
+
+        # Iterate over all cases
+        for case in cases:
+            # Add data to the Case sheet
+            case_sheet.append(
+                [
+                    case.pk,
+                    case.name,
+                    case.get_gender_display(),
+                    case.get_marriageStatus_display(),
+                    case.birthDate,
+                    case.nationalID,
+                    case.typeHelp.typeHelp if case.typeHelp else "",
+                    case.region.region if case.region else "",
                 ]
-                sheet.append(row_data)
+            )
 
-        # Remove the default 'Sheet' created by openpyxl
-        del workbook["Sheet"]
-        # Save the workbook and add it to the response
+            # Add data to the Family Members sheet
+            for member in case.family_members.all():
+                family_members_sheet.append(
+                    [
+                        case.pk,
+                        member.name,
+                        member.gender,
+                        member.age,
+                        member.qualification,
+                        member.occupation,
+                        member.notes,
+                    ]
+                )
+
+            # Add data to the Family Expenses sheet
+            for expense in case.family_expenses.all():
+                family_expenses_sheet.append(
+                    [case.pk, expense.statement, expense.amount, expense.notes]
+                )
+
+            # Add data to the Family Income sheet
+            for income in case.family_income.all():
+                family_income_sheet.append([case.pk, income.source_name, income.amount])
+
+            # Add data to the Medical Expenses sheet
+            for expense in case.medical_expenses.all():
+                medical_expenses_sheet.append(
+                    [
+                        case.pk,
+                        expense.fullName,
+                        expense.diseaseType,
+                        expense.medicine,
+                        expense.insuranceID,
+                    ]
+                )
+
+            # Add data to the Notes sheet
+            for note in case.notes.all():
+                notes_sheet.append(
+                    [
+                        case.pk,
+                        note.noteHeader,
+                        note.humanNeeds,
+                        note.otherHelp,
+                        note.interviewDescription,
+                        note.interviewResult,
+                        note.researcherOpinion,
+                        note.supervisorOpinion,
+                        note.overallRating,
+                    ]
+                )
+
+        # Create a response object with the Excel file content type
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-        response["Content-Disposition"] = "attachment; filename=case_data.xlsx"
+
+        # Set the file name
+        response["Content-Disposition"] = 'attachment; filename="case_data.xlsx"'
+
+        # Save the workbook to the response
         workbook.save(response)
+
         return response
-
-
