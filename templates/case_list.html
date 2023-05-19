@@ -11,42 +11,51 @@
             </div>
         {% endfor %}
     {% endif %}
-<div class="text-center">
-    <a href="{% url 'download_all_cases' %}" class="btn btn-success">{% trans "Download All Cases" %}</a>
-    <a href="{% url 'add_region' %}" class="btn btn-primary">{% trans "Add Region" %}</a>
-    <a href="{% url 'add_help' %}" class="btn btn-primary">{% trans "Add Help Type" %}</a>
-</div>
+
 
 <br>
-{% for case in case_list %}
-    <div class="card">
-        <div class="card-header">
-            <span class="font-weight-bold"><a href=" {% url 'case_detail' case.pk %}">{{ case.name }}</a></span> &middot;
-            <span class="text-muted">by {{ case.author }} | {{ case.addDate }}</span>
-        </div>
-        <div class="card-body">
-            <h3>{% trans "Describtion" %}</h3>
-            {{ case.caseDescribtion }}
-        </div>
-        <div class="card-footer text-muted">
-            <div class="text-center">
-                <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">{% trans "Edit" %}</a> |
-                <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">{% trans "Delete" %}</a> |
-                <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">{% trans "Download" %}</a>
-                <hr>
+{% if case_list %}
+    <div class="text-center">
+        <a href="{% url 'download_all_cases' %}" class="btn btn-success">{% trans "Download All Cases" %}</a>
+        <a href="{% url 'add_region' %}" class="btn btn-primary">{% trans "Add Region" %}</a>
+        <a href="{% url 'add_help' %}" class="btn btn-primary">{% trans "Add Help Type" %}</a>
+    </div>
+    {% for case in case_list %}
+        <div class="card">
+            <div class="card-header">
+                <span class="font-weight-bold"><a href=" {% url 'case_detail' case.pk %}">{{ case.name }}</a></span> &middot;
+                <span class="text-muted">by {{ case.author }} | {{ case.addDate }}</span>
             </div>
-            <div class="text-left">
-                <h5>{% trans "Comments" %}:</h5>
-                {% for comment in case.comment_set.all %}
-                    <p>
-                        <span class="font-weight-bold">
-                            {{ comment.author }} &middot;
-                        </span>
-                        {{ comment }}
-                    </p>
-                {% endfor %}
+            <div class="card-body">
+                <h3>{% trans "Describtion" %}</h3>
+                {{ case.caseDescribtion }}
             </div>
-        </div>
-<hr>
-{% endfor %}
+            <div class="card-footer text-muted">
+                <div class="text-center">
+                    <a href="{% url 'case_edit' case.pk %}" class="btn btn-primary">{% trans "Edit" %}</a> |
+                    <a href="{% url 'case_delete' case.pk %}" class="btn btn-danger">{% trans "Delete" %}</a> |
+                    <a href="{% url 'download_excel' case.pk %}" class="btn btn-success">{% trans "Download" %}</a>
+                    <hr>
+                </div>
+                <div class="text-left">
+                    <h5>{% trans "Comments" %}:</h5>
+                    {% for comment in case.comment_set.all %}
+                        <p>
+                            <span class="font-weight-bold">
+                                {{ comment.author }} &middot;
+                            </span>
+                            {{ comment }}
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        <hr>
+    {% endfor %}
+{% else %}
+    <div class="text-center">
+        <a href="{% url 'add_region' %}" class="btn btn-primary">{% trans "Add Region" %}</a>
+        <a href="{% url 'add_help' %}" class="btn btn-primary">{% trans "Add Help Type" %}</a>
+    </div>
+    <h1>No Cases</h1>
+{% endif %}
 {% endblock content %}
