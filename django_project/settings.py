@@ -96,7 +96,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"  # this is the sendgrid email
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-c99a.up.railway.app/'
+    "https://web-production-c99a.up.railway.app",
 ]
 
 # Database
