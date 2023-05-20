@@ -97,6 +97,8 @@ DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"  # this is the sendgrid email
 
 CSRF_TRUSTED_ORIGINS = [
     "https://web-production-c99a.up.railway.app",
+    "http://*.railway.app",
+    "https://*.127.0.0.1",
 ]
 
 # Database
