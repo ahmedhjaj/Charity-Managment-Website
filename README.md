@@ -7,6 +7,7 @@ The Charity Management System is a web-based platform developed for **Ajaweed El
 -   Charity locations management: Organizers can manage and update information about different charity locations.
 -   Analysis and reporting: The system generates statistical reports and visualizations based on the collected data, providing valuable insights to aid decision-making.
 -   User interface management: Different user roles, such as researchers and supervisors, have specific permissions and access levels within the system.
+-   Translation: Translated interface for the users in both Arabic and English using Django's Rosetta.
 
 # Installation and Usage
 
