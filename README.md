@@ -83,18 +83,18 @@ The application should now be running locally. Open a web browser and navigate t
  - ChartJS
 
 # Screenshots
-![alt text](screenshots\1.png)
-![alt text](screenshots\2.png)
-![alt text](screenshots\3.png)
-![alt text](screenshots\4.png)
-![alt text](screenshots\5.png)
-![alt text](screenshots\6.png)
-![alt text](screenshots\7.png)
-![alt text](screenshots\8.png)
-![alt text](screenshots\9.png)
-![alt text](screenshots\10.png)
-![alt text](screenshots\11.png)
-![alt text](screenshots\12.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/1.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/2.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/3.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/4.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/5.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/6.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/7.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/8.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/9.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/10.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/11.png)
+![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/12.png)
 
 # Contact
 
