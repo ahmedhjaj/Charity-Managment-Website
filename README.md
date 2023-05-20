@@ -84,6 +84,9 @@ The application should now be running locally. Open a web browser and navigate t
  - ChartJS
 
 # Demo
+- [LIVE DEMO](https://web-production-c99a.up.railway.app/) 
+- [Youtube Demo](https://youtu.be/tf_UctNNev8)
+
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/1.png)
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/2.png)
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/3.png)
