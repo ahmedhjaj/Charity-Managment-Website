@@ -83,7 +83,7 @@ The application should now be running locally. Open a web browser and navigate t
  - Bootstrap
  - ChartJS
 
-# Screenshots
+# Demo
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/1.png)
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/2.png)
 ![alt text](https://github.com/ahmedhjaj/Charity-Managment-Website/blob/main/screenshots/3.png)
