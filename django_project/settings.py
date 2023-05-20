@@ -88,12 +88,12 @@ TEMPLATES = [
     },
 ]
 EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = "apikey"  # this is exactly the value 'apikey'
+EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-DEFAULT_FROM_EMAIL = "hagag8042@gmail.com"  # this is the sendgrid email
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://web-production-c99a.up.railway.app",
